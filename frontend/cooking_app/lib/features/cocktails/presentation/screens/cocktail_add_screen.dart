@@ -1,13 +1,13 @@
-import 'package:cooking_app/features/cocktails/data/cocktail_repository_impl.dart';
-import 'package:cooking_app/features/cocktails/data/ingredient_repository_impl.dart';
+import 'package:cooking_app/features/cocktails/data/cocktail_repository.dart';
+import 'package:cooking_app/features/cocktails/data/ingredient_repository.dart';
 import 'package:cooking_app/features/cocktails/domain/cocktail.dart';
 import 'package:cooking_app/features/cocktails/domain/create_cocktail_dto.dart';
 import 'package:flutter/material.dart';
 import '../../domain/ingredient.dart';
 
 class CocktailAddScreen extends StatefulWidget {
-  final CocktailRepositoryImpl _cocktailRepository;
-  final IngredientRepositoryImpl _ingredientRepository;
+  final CocktailRepository _cocktailRepository;
+  final IngredientRepository _ingredientRepository;
   final Cocktail? _cocktail;
 
   const CocktailAddScreen({super.key, required this._cocktailRepository, required this._ingredientRepository, this._cocktail});

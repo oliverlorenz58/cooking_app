@@ -1,4 +1,3 @@
-import 'package:cooking_app/features/cocktails/domain/ingredient.dart';
 
 class CreateIngredientDto {
   final String name;

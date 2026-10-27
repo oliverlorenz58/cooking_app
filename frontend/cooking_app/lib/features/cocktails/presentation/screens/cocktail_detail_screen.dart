@@ -1,13 +1,12 @@
-import 'package:cooking_app/features/cocktails/data/cocktail_repository_impl.dart';
-import 'package:cooking_app/features/cocktails/data/ingredient_repository_impl.dart';
+import 'package:cooking_app/features/cocktails/data/cocktail_repository.dart';
+import 'package:cooking_app/features/cocktails/data/ingredient_repository.dart';
 import 'package:cooking_app/features/cocktails/domain/cocktail.dart';
-import 'package:cooking_app/features/cocktails/domain/ingredient.dart';
 import 'package:cooking_app/features/cocktails/presentation/screens/cocktail_add_screen.dart';
 import 'package:flutter/material.dart';
 
 class CocktailDetailScreen extends StatefulWidget {
   final Cocktail cocktail;
-  final CocktailRepositoryImpl cocktailRepository;
+  final CocktailRepository cocktailRepository;
 
   const CocktailDetailScreen({
     super.key,
@@ -147,7 +146,7 @@ class _CocktailDetailScreenState extends State<CocktailDetailScreen> {
                   MaterialPageRoute(
                     builder: (context) => CocktailAddScreen(
                       cocktailRepository: widget.cocktailRepository,
-                      ingredientRepository: IngredientRepositoryImpl(),
+                      ingredientRepository: IngredientRepository(),
                       cocktail: _currentCocktail, // Aktuelle Daten übergeben
                     ),
                   ),

@@ -1,0 +1,5 @@
+node_modules
+.env
+# Wird im Container neu erzeugt (der lokale Client ist für das Host-System gebaut)
+src/generated
+db

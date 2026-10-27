@@ -1,7 +1,5 @@
-import 'package:cooking_app/features/cocktails/data/cocktail_repository_impl.dart';
-import 'package:cooking_app/features/cocktails/presentation/screens/cocktail_detail_screen.dart';
 import 'package:flutter/material.dart';
-import '../domain/cocktail.dart';
+import '../../domain/cocktail.dart';
 
 class CocktailCard extends StatelessWidget {
   final Cocktail cocktail;

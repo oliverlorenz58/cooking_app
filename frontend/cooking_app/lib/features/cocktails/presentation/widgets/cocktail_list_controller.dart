@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../domain/cocktail.dart';
-import '../domain/cocktail_repository.dart';
+import '../../domain/cocktail.dart';
+import '../../data/cocktail_repository.dart';
 
 enum CocktailListStatus { initial, loading, success, error }
 

@@ -1,20 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cooking_app/features/cocktails/domain/cocktail.dart';
 import 'package:cooking_app/features/cocktails/domain/create_cocktail_dto.dart';
-import 'package:cooking_app/features/cocktails/domain/update_cocktail_dto.dart';
 import 'package:http/http.dart' as http;
 
-import '../domain/cocktail.dart';
-import '../domain/cocktail_repository.dart';
+class CocktailRemoteDataSource {
 
-class CocktailRepositoryImpl implements CocktailRepository {
-  
   final String baseUrl;
 
-  CocktailRepositoryImpl({this.baseUrl = 'http://10.0.2.2:3000/api/cocktails'});
+  CocktailRemoteDataSource({this.baseUrl = 'http://10.0.2.2:3000/api/cocktails'});
 
-  @override
   Future<List<Cocktail>> fetchCocktails() async {
 
     final url = Uri.parse(baseUrl);
@@ -23,7 +19,7 @@ class CocktailRepositoryImpl implements CocktailRepository {
       final response = await http.get(
         url,
         headers: {
-          'Contenct-Type': 'json'
+          'Accept': 'application/json'
         },
       );
 
@@ -39,7 +35,6 @@ class CocktailRepositoryImpl implements CocktailRepository {
     }
   }
 
-  @override
   Future<Cocktail> fetchCocktailById(int id) async {
     final url = Uri.parse('$baseUrl/$id');
 
@@ -47,7 +42,7 @@ class CocktailRepositoryImpl implements CocktailRepository {
       final response = await http.get(
         url,
         headers: {
-          'Contenct-Type': 'json'
+          'Accept': 'application/json'
         },
       );
 
@@ -63,7 +58,6 @@ class CocktailRepositoryImpl implements CocktailRepository {
     }
   }
 
-  @override
   Future<Cocktail> postCocktail(CreateCocktailDto dto) async {
     final url = Uri.parse(baseUrl);
 
@@ -90,7 +84,6 @@ class CocktailRepositoryImpl implements CocktailRepository {
     }
   }
 
-  @override
   Future<void> deleteCocktail(int id) async {
     final url = Uri.parse('$baseUrl/$id');
 
@@ -117,7 +110,6 @@ class CocktailRepositoryImpl implements CocktailRepository {
     }
   }
 
-  @override
   Future<Cocktail> updateCocktail(CreateCocktailDto dto, int id) async {
     final url = Uri.parse('$baseUrl/$id');
 
@@ -131,15 +123,15 @@ class CocktailRepositoryImpl implements CocktailRepository {
 
       log(id.toString());
       log(dto.toJson().toString());
-      
+
       if (response.statusCode == 200 || response.statusCode == 204) {
         return Cocktail.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Server-Fehler Statuscode ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
-      log("Fehler beim Löschen: $e");
-      throw Exception('Netzwerkfehler beim Löschen des Cocktails: $e');
+      log("Fehler beim Aktualisieren: $e");
+      throw Exception('Netzwerkfehler beim Aktualisieren des Cocktails: $e');
     }
   }
 }

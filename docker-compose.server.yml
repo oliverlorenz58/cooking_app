@@ -1,0 +1,35 @@
+# Backend + Datenbank für den Server
+# Start: docker compose -f docker-compose.server.yml up -d --build
+# Die Zugangsdaten kommen aus der Datei .env im selben Ordner (Vorlage: .env.example)
+
+services:
+  db:
+    build: ./database
+    image: cooking-db
+    container_name: cooking_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER fehlt in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB fehlt in .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # Kein "ports:" -> die DB ist nur im internen Docker-Netz für das Backend erreichbar
+
+  backend:
+    build: ./backend
+    image: cooking-backend
+    container_name: cooking_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      # "db" ist der Service-Name oben und dient im Docker-Netz als Hostname
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+
+volumes:
+  db_data:

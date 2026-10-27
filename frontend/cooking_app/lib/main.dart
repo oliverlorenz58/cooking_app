@@ -1,7 +1,11 @@
+import 'package:cooking_app/core/database/isar_service.dart';
 import 'package:cooking_app/core/layout/main_shell_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Lokale Datenbank öffnen, bevor die Repositories sie benutzen
+  await IsarService.init();
   runApp(const MyApp());
 }
 

@@ -4,15 +4,12 @@ import 'package:cooking_app/features/cocktails/domain/create_ingredient_dto.dart
 import 'package:cooking_app/features/cocktails/domain/ingredient.dart';
 import 'package:http/http.dart' as http;
 
-import '../domain/ingredient_repository.dart';
-
-class IngredientRepositoryImpl implements IngredientRepository {
+class IngredientRepository {
   
   final String baseUrl;
 
-  IngredientRepositoryImpl({this.baseUrl = 'http://10.0.2.2:3000/api/items'});
+  IngredientRepository({this.baseUrl = 'http://10.0.2.2:3000/api/items'});
 
-  @override
   Future<List<Ingredient>> fetchIngredient() async {
 
     final url = Uri.parse(baseUrl);
@@ -37,7 +34,6 @@ class IngredientRepositoryImpl implements IngredientRepository {
     }
   }
 
-  @override
   Future<Ingredient> postIngredient(CreateIngredientDto dto) async {
     final url = Uri.parse(baseUrl);
 

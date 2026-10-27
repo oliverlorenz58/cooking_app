@@ -1,10 +1,10 @@
-import 'package:cooking_app/features/cocktails/data/ingredient_repository_impl.dart';
+import 'package:cooking_app/features/cocktails/data/ingredient_repository.dart';
 import 'package:cooking_app/features/cocktails/presentation/screens/cocktail_add_screen.dart';
 import 'package:cooking_app/features/cocktails/presentation/screens/cocktail_detail_screen.dart';
 import 'package:flutter/material.dart';
-import '../../data/cocktail_repository_impl.dart';
-import '../cocktail_list_controller.dart';
-import '../cocktail_card.dart';
+import '../../data/cocktail_repository.dart';
+import '../widgets/cocktail_list_controller.dart';
+import '../widgets/cocktail_card.dart';
 
 class CocktailListScreen extends StatefulWidget {
   const CocktailListScreen({super.key});
@@ -14,13 +14,14 @@ class CocktailListScreen extends StatefulWidget {
 }
 
 class _CocktailListScreenState extends State<CocktailListScreen> {
+  final _repository = CocktailRepository();
   late final CocktailListController _controller;
 
   @override
   void initState() {
     super.initState();
     // 1. Controller mit Datenquelle verbinden
-    _controller = CocktailListController(CocktailRepositoryImpl());
+    _controller = CocktailListController(_repository);
     // 2. Datenabruf beim Start auslösen
     _controller.loadCocktails();
   }
@@ -67,7 +68,7 @@ class _CocktailListScreenState extends State<CocktailListScreen> {
                         MaterialPageRoute(
                           builder: (context) => CocktailDetailScreen(
                             cocktail: cocktail, 
-                            cocktailRepository: CocktailRepositoryImpl(),
+                            cocktailRepository: _repository,
                         ),
                       ),
                     );
@@ -89,8 +90,8 @@ class _CocktailListScreenState extends State<CocktailListScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => CocktailAddScreen(
-                cocktailRepository: CocktailRepositoryImpl(),
-                ingredientRepository: IngredientRepositoryImpl(),
+                cocktailRepository: _repository,
+                ingredientRepository: IngredientRepository(),
             )),
           );
 
