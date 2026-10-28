@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cooking_app/core/network/api_config.dart';
 import 'package:cooking_app/features/cocktails/domain/create_ingredient_dto.dart';
 import 'package:cooking_app/features/cocktails/domain/ingredient.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +9,7 @@ class IngredientRepository {
   
   final String baseUrl;
 
-  IngredientRepository({this.baseUrl = 'http://10.0.2.2:3000/api/items'});
+  IngredientRepository({this.baseUrl = '$apiBaseUrl/api/items'});
 
   Future<List<Ingredient>> fetchIngredient() async {
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cooking_app/core/network/api_config.dart';
 import 'package:cooking_app/features/cocktails/domain/cocktail.dart';
 import 'package:cooking_app/features/cocktails/domain/create_cocktail_dto.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,7 @@ class CocktailRemoteDataSource {
 
   final String baseUrl;
 
-  CocktailRemoteDataSource({this.baseUrl = 'http://10.0.2.2:3000/api/cocktails'});
+  CocktailRemoteDataSource({this.baseUrl = '$apiBaseUrl/api/cocktails'});
 
   Future<List<Cocktail>> fetchCocktails() async {
 

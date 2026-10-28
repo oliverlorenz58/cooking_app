@@ -1,0 +1,101 @@
+# Baut bei jedem veröffentlichten GitHub-Release die Android-App
+# und hängt die signierte APK an den Release an (für Obtainium).
+#
+# Benötigt in GitHub unter Settings → Secrets and variables → Actions:
+#   Secrets:   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
+#              ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+#   Variable:  API_BASE_URL  (z. B. http://192.168.178.66:3000)
+
+name: Android Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write # nötig, um die APK an den Release anzuhängen
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/cooking_app
+
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v5
+
+      - name: Version aus dem Tag lesen
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          # Tag muss die Form v1.2.3 haben, daraus wird versionName 1.2.3
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag '$TAG' hat nicht die Form v1.2.3"
+            exit 1
+          fi
+          echo "name=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Konfiguration prüfen
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          # Ohne diese Werte würde die App auf 10.0.2.2 zeigen bzw. mit einem
+          # fremden Schlüssel signiert, und Updates würden fehlschlagen
+          if [ -z "$API_BASE_URL" ]; then echo "::error::Variable API_BASE_URL fehlt"; exit 1; fi
+          if [ -z "$KEYSTORE" ]; then echo "::error::Secret ANDROID_KEYSTORE_BASE64 fehlt"; exit 1; fi
+
+      - name: Java einrichten
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Flutter einrichten
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.8'
+          channel: stable
+          cache: true
+
+      - name: Signaturschlüssel aus Secrets herstellen
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE" | base64 -d > android/app/release-keystore.jks
+          cat > android/key.properties <<EOF
+          storeFile=release-keystore.jks
+          storePassword=$STORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Abhängigkeiten und Isar-Code erzeugen
+        run: |
+          flutter pub get
+          dart run build_runner build
+
+      - name: APK bauen
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+        run: |
+          # Build-Nummer = laufende Nummer dieses Workflows, steigt bei jedem Release
+          flutter build apk --release \
+            --target-platform android-arm64 \
+            --build-name=${{ steps.version.outputs.name }} \
+            --build-number=${{ github.run_number }} \
+            --dart-define=API_BASE_URL="$API_BASE_URL"
+
+      - name: APK an den Release anhängen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk "cooking_app-$TAG.apk"
+          gh release upload "$TAG" "cooking_app-$TAG.apk" --clobber --repo "${{ github.repository }}"

@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Ohne diese Berechtigung kann der Release-Build nicht mit dem Backend sprechen -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="cooking_app"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
